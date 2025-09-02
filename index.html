@@ -1,0 +1,210 @@
+<!-- $t@$h, QVLx Labs -->
+
+<!doctype html>
+<html lang="en" data-theme="nocturne">
+<head>
+  <meta charset="utf-8" />
+  <title>Radix Quest</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- No inline styles or handlers: CSP-friendly -->
+  <link rel="preload" href="style.css" as="style">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1 class="brand">
+  <svg class="logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="rq-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop class="rq-s1" offset="0%"/>
+        <stop class="rq-s2" offset="100%"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Rotating gradient hex -->
+    <g class="spin">
+      <polygon points="32,6 53,18 53,46 32,58 11,46 11,18"
+               fill="none" stroke="url(#rq-grad)" stroke-width="3" stroke-linejoin="round"/>
+    </g>
+
+    <!-- Dotted orbit ring (counter-rotating) -->
+    <g class="orbit">
+      <circle cx="32" cy="32" r="18"
+              fill="none" stroke="currentColor" stroke-width="2"
+              stroke-dasharray="2 6" stroke-linecap="round" opacity="0.75"/>
+    </g>
+
+    <!-- Nibble bits (pulse) -->
+    <g class="bits pulse">
+      <rect x="22" y="22" width="6" height="6" rx="1.5" ry="1.5" fill="url(#rq-grad)"/>
+      <rect x="36" y="22" width="6" height="6" rx="1.5" ry="1.5" fill="url(#rq-grad)"/>
+      <rect x="22" y="36" width="6" height="6" rx="1.5" ry="1.5" fill="url(#rq-grad)"/>
+      <rect x="36" y="36" width="6" height="6" rx="1.5" ry="1.5" fill="url(#rq-grad)"/>
+    </g>
+  </svg>
+
+  <span class="wordmark">Radix&nbsp;Quest</span>
+</h1>
+
+    <p class="tag">Private. Precise. Purposeful.</p>
+
+    <div class="topbar">
+      <nav class="tabs" aria-label="Sections">
+        <button class="tab is-active" data-tab="calc" aria-controls="calc-panel" aria-selected="true" role="tab">Calculator</button>
+        <button class="tab" data-tab="convert" aria-controls="convert-panel" aria-selected="false" role="tab">Converter</button>
+        <button class="tab" data-tab="help" aria-controls="help-panel" aria-selected="false" role="tab">Help</button>
+      </nav>
+
+      <div class="theme-control">
+        <label for="theme" class="theme-label">Theme</label>
+        <select id="theme" aria-label="Select theme">
+          <option value="auto">Auto (system)</option>
+          <option value="nocturne" selected>Nocturne (default)</option>
+          <option value="aurora">Aurora Prism</option>
+          <option value="cyberviolet">Cyber Violet</option>
+          <option value="oceanglass">Ocean Glass</option>
+          <option value="terminal">Terminal Mono</option>
+          <option value="paper">Paper Ivory</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Calculator Panel -->
+    <section id="calc-panel" class="panel is-active" role="tabpanel" aria-labelledby="Calculator">
+      <form class="calc-form" autocomplete="off">
+        <div class="row">
+          <label for="expr">Expression</label>
+          <input id="expr" name="expr" inputmode="text" placeholder="Examples: 2*(3+5), 0xFF + 0b1010, sin(pi/6)^2, 5 << 3, xor(0b1010,0b0110)" aria-describedby="expr-hint">
+          <div id="expr-hint" class="hint">
+            Supported: + − × ÷ % ^ ** (power), parentheses, functions (sin, cos, tan, asin, acos, atan, sqrt, log, ln, abs, floor, ceil, round, min, max).
+            Bitwise (integer mode): ~ &amp; | xor &laquo;&laquo; &raquo;&raquo;. Constants: pi, tau, e.
+          </div>
+        </div>
+
+        <div class="row grid-4">
+          <div>
+            <label for="input-base">Input base (for integers)</label>
+            <select id="input-base" name="input-base">
+              <option value="auto" selected>Auto (0x/0b/0o or decimal)</option>
+              <option value="2">Binary (base 2)</option>
+              <option value="8">Octal (base 8)</option>
+              <option value="10">Decimal (base 10)</option>
+              <option value="16">Hex (base 16)</option>
+            </select>
+          </div>
+          <div>
+            <label for="display-base">Primary display base</label>
+            <select id="display-base" name="display-base">
+              <option value="10" selected>Decimal</option>
+              <option value="2">Binary</option>
+              <option value="8">Octal</option>
+              <option value="16">Hex</option>
+              <option value="all">Show all bases</option>
+            </select>
+          </div>
+          <div>
+            <label for="mode">Mode</label>
+            <select id="mode" name="mode">
+              <option value="float" selected>Floating-point</option>
+              <option value="int">Integer / Bitwise</option>
+            </select>
+          </div>
+          <div id="int-config" class="int-config" aria-hidden="true">
+            <label for="bitwidth">Bit width</label>
+            <div class="row-inline">
+              <select id="bitwidth" name="bitwidth">
+                <option value="8">8-bit</option>
+                <option value="16">16-bit</option>
+                <option value="32" selected>32-bit</option>
+                <option value="64">64-bit</option>
+              </select>
+              <label class="chk"><input type="checkbox" id="signed" checked> Signed</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row buttons">
+          <button type="button" id="evaluate">Evaluate</button>
+          <button type="button" id="clear" class="ghost">Clear</button>
+        </div>
+      </form>
+
+      <section class="results">
+        <h2>Result</h2>
+        <output id="result-main" class="result-main" aria-live="polite"></output>
+        <div id="result-multibase" class="result-multibase"></div>
+        <div id="result-bits" class="result-bits"></div>
+        <div id="warn" class="warn" role="status" aria-live="polite"></div>
+      </section>
+
+      <section class="history">
+        <div class="history-head">
+          <h3>History</h3>
+          <button type="button" id="history-clear" class="ghost">Clear history</button>
+        </div>
+        <ul id="history-list" class="history-list" aria-live="polite"></ul>
+      </section>
+    </section>
+
+    <!-- Converter Panel -->
+    <section id="convert-panel" class="panel" role="tabpanel" aria-labelledby="Converter" hidden>
+      <form class="convert-form" autocomplete="off">
+        <div class="row grid-3">
+          <div>
+            <label for="category">Category</label>
+            <select id="category" name="category"></select>
+          </div>
+          <div>
+            <label for="from-unit">From</label>
+            <select id="from-unit" name="from-unit"></select>
+          </div>
+          <div>
+            <label for="to-unit">To</label>
+            <select id="to-unit" name="to-unit"></select>
+          </div>
+        </div>
+
+        <div class="row grid-3">
+          <div>
+            <label for="from-value">Amount</label>
+            <input id="from-value" name="from-value" inputmode="decimal" placeholder="Enter value">
+          </div>
+          <div class="row-inline top-pad">
+            <button type="button" id="swap">Swap</button>
+          </div>
+          <div>
+            <label for="to-value">Converted</label>
+            <input id="to-value" name="to-value" readonly>
+          </div>
+        </div>
+
+        <div class="row">
+          <div id="conv-note" class="hint">Data units include both decimal (kB, MB, … ×1000) and binary (KiB, MiB, … ×1024).</div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Help Panel -->
+    <section id="help-panel" class="panel" role="tabpanel" aria-labelledby="Help" hidden>
+      <article class="help">
+        <h2>Tips</h2>
+        <ul class="ticks">
+          <li>Pick a <strong>Theme</strong> in the top-right — it’s instant and saved for next visit.</li>
+          <li>Prefixes <code>0x</code>, <code>0b</code>, <code>0o</code> always work. Set “Input base” to treat un-prefixed integers in that base.</li>
+          <li>Integer mode enables bitwise ops: <code>~ &amp; | xor &lt;&lt; &gt;&gt;</code>. Division uses truncating integer division.</li>
+          <li>Functions: <code>sin, cos, tan, asin, acos, atan, sqrt, log(=log10), ln, abs, floor, ceil, round, min, max</code>.</li>
+          <li>Constants: <code>pi</code>, <code>tau</code>, <code>e</code>. Underscores allowed in numerals: <code>1_000_000</code>.</li>
+        </ul>
+      </article>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Built for a more private web. No tracking, no external requests.</p>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
